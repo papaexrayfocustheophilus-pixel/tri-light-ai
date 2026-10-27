@@ -1,0 +1,69 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>AI PAY V33 UNIVERSAL</title>
+<style>*{margin:0;padding:0;box-sizing:border-box;font-family:Arial}body{background:#0a0a0a;color:#fff;display:flex;flex-direction:column;align-items:center;padding:10px;padding-bottom:80px}.gold{color:#FFD700}.card{border:1.5px solid #FFD700;border-radius:16px;padding:12px;width:100%;max-width:420px;margin:6px 0;background:#151515}.btn{width:100%;padding:12px;border:none;border-radius:12px;font-weight:bold;margin:5px 0}.btn-gold{background:linear-gradient(90deg,#FFD700,#FF8C00);color:#000}.input{width:100%;padding:12px;border-radius:12px;border:1px solid #FFD700;background:#222;color:#fff}.small{font-size:11px;color:#aaa;line-height:1.3}.live{color:#00ff80}.msg{padding:9px;border-radius:10px;margin:5px 0;width:100%;font-size:13px;display:block}.user{background:#FFD700;color:#000;text-align:right;margin-left:10%}.ai{background:#222;border:1px solid #444;margin-right:8%}</style></head><body>
+<h3 class="gold">💸 AI PAY V33 UNIVERSAL</h3><p class="small live">🌍 Pay Anything | Kenya ↔ USA | Any Country</p>
+<div class="card"><div id="chat" style="min-height:220px;max-height:380px;overflow-y:auto;border:1px solid #333;border-radius:10px;padding:5px;margin-bottom:8px"></div><input id="in" class="input" placeholder='Pay Spotify 15$ au Tuma 20$ kwa John USA'><button class="btn btn-gold" onclick="go()">🚀 SEND</button></div>
+<div class="card" id="bill" style="display:none;text-align:center"><h3 id="app" class="gold"></h3><p id="base" class="small"></p><p id="fee" class="small"></p><h3 id="tot" class="live"></h3><p id="info" class="small"></p><button class="btn" style="background:#222;color:#fff;border:1px solid #FFD700" onclick="stk()">📲 THIBITISHA - SEND STK</button></div>
+<div class="card" id="ok" style="display:none;text-align:center"><h2 style="color:#00ff80">✅ PAID Dio!</h2><p id="oktxt" class="small"></p><button class="btn btn-gold" onclick="resetIt()">Endelea</button></div>
+<script>
+let M={client:{name:'Dio'},hist:[],tx:{step:'idle'}};
+function save(){try{localStorage.setItem('v33_c',JSON.stringify(M.client));localStorage.setItem('v33_h',JSON.stringify(M.hist));}catch(e){}}
+try{M.client=JSON.parse(localStorage.getItem('v33_c')||'{"name":"Dio"}');M.hist=JSON.parse(localStorage.getItem('v33_h')||'[]');}catch(e){}
+function add(t,isUser){let c=document.getElementById('chat');let d=document.createElement('div');d.className=isUser?'msg user':'msg ai';d.innerHTML=t;c.appendChild(d);c.scrollTop=c.scrollHeight;}
+function init(){add('Sasa Dio! V33 UNIVERSAL 🌍<br><br>✅ <b>Kulipa chochote:</b> Andika "Pay Spotify 15$" au "Pay Netflix 20$" au hata "Pay my shop 10$"<br><br>✅ <b>Kutuma Kenya → USA:</b> Andika "Tuma 20$ kwa John USA" au "Send money to Sarah USA"<br><br>Niko tayari!','');}
+function parseAmt(s){let m=s.match(/\$?\s?(\d+(\.\d+)?)/);if(!m)return null;let v=parseFloat(m[1]);if(v>5000)return null;return v;}
+function getAppName(s){
+ let l=s.toLowerCase();
+ if(l.includes('google'))return 'Google';
+ if(l.includes('meta')||l.includes('facebook'))return 'Meta';
+ if(l.includes('openai')||l.includes('open ai')||l.includes('chatgpt'))return 'OpenAI';
+ if(l.includes('netflix'))return 'Netflix';
+ if(l.includes('spotify'))return 'Spotify';
+ if(l.includes('youtube'))return 'YouTube';
+ if(l.includes('eleven'))return 'ElevenLabs';
+ if(l.includes('tiktok'))return 'TikTok';
+ // CUSTOM APP - chochote
+ let clean=s.replace(/pay|tuma|send|money|kwa|to|for|\$|\d+/gi,'').trim();
+ if(clean.length>1){return clean.split(' ').slice(0,3).join(' ').replace(/\b\w/g,x=>x.toUpperCase());}
+ return 'Custom Service';
+}
+function getCountry(s){let l=s.toLowerCase();if(l.includes('usa')||l.includes('america')||l.includes('us '))return 'USA';if(l.includes('uk')||l.includes('england'))return 'UK';if(l.includes('tanzania'))return 'Tanzania';if(l.includes('uganda'))return 'Uganda';if(l.includes('nigeria'))return 'Nigeria';if(l.includes('kenya'))return 'Kenya';return null;}
+
+function go(){
+ let el=document.getElementById('in');let txt=el.value.trim();if(!txt)return;add(txt,true);el.value='';
+ let low=txt.toLowerCase();let st=M.tx.step;
+ // P2P FLOW
+ if(st==='await_rec_name'){M.tx.rName=txt;M.tx.step='await_rec_country';add('Sawa, <b>'+txt+'</b>. Yuko nchi gani? (USA, Kenya, UK?)','');return;}
+ if(st==='await_rec_country'){M.tx.rCountry=txt;M.tx.step='await_rec_phone';add('Nchi <b>'+txt+'</b>. Namba yake ya simu / CashApp / Zelle ni gani?','');return;}
+ if(st==='await_rec_phone'){M.tx.rPhone=txt;M.tx.step='await_rec_amt';add('Nimehifadhi: <b>'+M.tx.rName+' - '+M.tx.rCountry+' - '+txt+'</b><br>Unamtumia kiasi gani? Andika kama "20$"','');return;}
+ if(st==='await_rec_amt'){let a=parseAmt(txt);if(!a){add('Andika kiasi kama "20$"','');return;}M.tx.amount=a;showP2P(a);return;}
+ if(st==='await_amt_app'){let a=parseAmt(txt);if(!a){add('Andika kiasi kama "15$"','');return;}showApp(M.tx.app,a);M.tx.step='idle';return;}
+
+ // NEW INTENT
+ if(low.includes('tuma')||low.includes('send')){
+   let c=getCountry(txt);let a=parseAmt(txt);
+   M.tx={step:'await_rec_name'};if(c)M.tx.rCountry=c;if(a)M.tx.amount=a;
+   // try extract name
+   let nameMatch=txt.match(/(kwa|to|for)\s+([A-Za-z]+)/i);
+   if(nameMatch){M.tx.rName=nameMatch[2];M.tx.step='await_rec_country';add('Sawa unatuma kwa <b>'+nameMatch[2]+'</b> '+(c?'('+c+')':'')+'. '+(c?'':'Yuko nchi gani?')+' Namba yake ni gani? Naanza na nchi kama hujasema.','');if(!c){M.tx.step='await_rec_country';}else{M.tx.step='await_rec_phone';add('Nchi '+c+'. Namba yake ya '+ (c==='USA'?'Zelle/CashApp/Phone':'M-Pesa') +' ni gani?','');}return;}
+   add('Sawa Dio! Unataka kutuma pesa. <b>Jina la mpokeaji ni nani?</b>','');return;
+ }
+ if(low.includes('pay')){
+   let app=getAppName(txt);let a=parseAmt(txt);
+   if(!a){M.tx={step:'await_amt_app',app:app};add('Sawa unalipia <b>'+app+'</b>. Ni kiasi gani? Andika kama "<b>Pay '+app+' 20$</b>" - Sijiekei mwenyewe.','');return;}
+   showApp(app,a);return;
+ }
+ add('Nimekuelewa Dio: "'+txt+'"<br><br>Andika:<br>• <b>Pay Spotify 15$</b> - kulipa chochote<br>• <b>Tuma 20$ kwa John USA</b> - Kenya → USA','');
+}
+function showApp(app,usd){let kes=Math.round(usd*129);let fee=Math.round(kes*0.05);let tot=kes+fee;M.tx={app:app,amount:usd,total:tot,step:'confirm_app',type:'app'};document.getElementById('app').innerText=app+' $'+usd;document.getElementById('base').innerText='Base KES '+kes;document.getElementById('fee').innerText='Fee 5% KES '+fee;document.getElementById('tot').innerText='Total KES '+tot;document.getElementById('info').innerText='Lipa '+app+' kupitia AI Pay | STK kwa Dio';document.getElementById('bill').style.display='block';add('✅ <b>Bill:</b> '+app+' $'+usd+' = KES '+kes+' + Fee '+fee+' = <b>KES '+tot+'</b><br>Bonyeza THIBITISHA.','');}
+function showP2P(usd){
+ let kes=Math.round(usd*129);let fee=Math.round(kes*0.05);let tot=kes+fee;
+ M.tx.total=tot;M.tx.type='p2p';M.tx.step='confirm_p2p';
+ let country=M.tx.rCountry||'USA';
+ let receive=country==='USA'?('$'+usd):('KES '+kes);
+ document.getElementById('app').innerText='Tuma kwa '+M.tx.rName+' ('+country+')';document.getElementById('base').innerText='Unatuma $'+usd+' = KES '+kes;document.getElementById('fee').innerText='Fee 5% KES '+fee;document.getElementById('tot').innerText='Total kulipa KES '+tot;document.getElementById('info').innerText=country==='USA'?'Atapokea '+receive+' via Zelle/CashApp':'Atapokea KES '+kes+' via M-Pesa';document.getElementById('bill').style.display='block';
+ add('🔍 <b>SCAN:</b> '+M.tx.rName+' | '+country+' | '+M.tx.rPhone+'<br>Utatuma <b>$'+usd+'</b> (KES '+kes+') + Fee '+fee+' = <b>KES '+tot+'</b><br>Atapokea <b>'+receive+'</b><br><br><b>Unathibitisha? Bonyeza THIBITISHA</b>','');
+}
+function stk(){let b=document.getElementById('bill');b.innerHTML='<p class="live">📲 STK LIVE kwa Dio... Check phone popup, weka PIN kwa simu yako... 3s</p>';setTimeout(()=>{b.style.display='none';document.getElementById('ok').style.display='block';let ref='AIPAY-'+Math.random().toString(36).toUpperCase().substr(2,6);let txt=M.tx.type==='p2p'?'Tumeshinda! $'+M.tx.amount+' kwa '+M.tx.rName+' ('+M.tx.rCountry+') Ref '+ref:'Paid '+M.tx.app+' $'+M.tx.amount+' Ref '+ref;document.getElementById('oktxt').innerText=txt;M.hist.unshift({app:M.tx.app||M.tx.rName,amount:M.tx.amount});save();add('🎉 '+txt+' | UNIVERSAL PAID!','');M.tx={step:'idle'};},3000);}
+function resetIt(){document.getElementById('ok').style.display='none';document.getElementById('bill').style.display='none';document.getElementById('bill').innerHTML='<h3 id="app" class="gold"></h3><p id="base" class="small"></p><p id="fee" class="small"></p><h3 id="tot" class="live"></h3><p id="info" class="small"></p><button class="btn" style="background:#222;color:#fff;border:1px solid #FFD700" onclick="stk()">📲 THIBITISHA - SEND STK</button>';}
+document.getElementById('in').addEventListener('keypress',e=>{if(e.key==='Enter')go();});init();
+</script></body></html>
